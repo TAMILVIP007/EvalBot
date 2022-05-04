@@ -2,13 +2,11 @@ from config import env, AUTH
 
 
 def init_db():
-    if env.get("MONGO_URI"):
-        from pymongo import MongoClient
-        client = MongoClient(env["MONGO_URI"])
-        db = client["bot"]
-        return db
-    else:
+    if not env.get("MONGO_URI"):
         return None
+    from pymongo import MongoClient
+    client = MongoClient(env["MONGO_URI"])
+    return client["bot"]
 
 
 DB = init_db()
@@ -30,16 +28,11 @@ def unauth_user(user_id):
 
 
 def is_auth(user_id):
-    if user_id in AUTH or user_id == int(env["OWNER_ID"]):
-        return True
-    return False
+    return user_id in AUTH or user_id == int(env["OWNER_ID"])
 
 
 def get_auth_users():
-    if DB != None:
-        return [user["user_id"] for user in DB.users.find({})]
-    else:
-        return AUTH
+    return [user["user_id"] for user in DB.users.find({})] if DB != None else AUTH
 
 
 def __load_auth():

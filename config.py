@@ -15,8 +15,9 @@ logging.basicConfig(
 
 def init_vars():
     load_dotenv()
-    if not all(
-        key in os.environ for key in ["API_KEY", "API_HASH", "TOKEN", "OWNER_ID"]
+    if any(
+        key not in os.environ
+        for key in ["API_KEY", "API_HASH", "TOKEN", "OWNER_ID"]
     ):
         print("Please setup API_KEY, API_HASH, TOKEN and OWNER_ID")
         for key in ["API_KEY", "API_HASH", "TOKEN", "OWNER_ID"]:
