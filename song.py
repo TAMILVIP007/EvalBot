@@ -6,11 +6,11 @@ pattern = r'"([^"]*)"'
 
 
 async def download_song(query: str):
-    out = await bash("spotdl '{}'".format(query))
+    out = await bash(f"spotdl '{query}'")
     match = re.findall(pattern, out) if out != "" else []
     if len(match) == 0:
         return "", "No results found!"
-    return match[-1] + ".mp3", ""
+    return f"{match[-1]}.mp3", ""
 
 
 @command(pattern="song")

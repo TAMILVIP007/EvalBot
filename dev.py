@@ -29,6 +29,4 @@ async def bash(code):
         *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
     stdout, stderr = await process.communicate()
-    result = str(stdout.decode().strip()) \
-        + str(stderr.decode().strip())
-    return result
+    return str(stdout.decode().strip()) + str(stderr.decode().strip())

@@ -29,7 +29,7 @@ async def _quotly_api_(e):
         d = d.replace(hex_to_name(color) if g == "hex" else color, "")
     else:
         color = "#1b1429"
-    photo = True if "p" in d else False
+    photo = "p" in d
     messages = []
     num = [int(x) for x in d.split() if x.isdigit()]
     num = num[0] if num else None
@@ -80,37 +80,30 @@ async def _quotly_api_(e):
                 "type": "group",
                 "name": _name if c[-1] != _id else "",
             }
-            if len(msgs) == 1:
-                if _x.reply_to and "r" in d:
-                    reply = await _x.get_reply_message()
-                    if isinstance(reply.sender, types.Channel):
-                        _r = {
-                            "chatId": e.chat_id,
-                            "first_name": reply.chat.title,
-                            "last_name": "",
-                            "username": reply.chat.username,
-                            "text": reply.text,
-                            "name": reply.chat.title,
-                        }
-                    elif reply.sender:
-                        name = reply.sender.first_name
-                        name = (
-                            name + " " + reply.sender.last_name
-                            if reply.sender.last_name
-                            else name
-                        )
-                        if reply.fwd_from and reply.fwd_from.from_name:
-                            _name = reply.fwd_from.from_name
-                        _r = {
-                            "chatId": e.chat_id,
-                            "first_name": reply.sender.first_name,
-                            "last_name": "reply.sender.last_name",
-                            "username": reply.sender.username,
-                            "text": reply.text,
-                            "name": name,
-                        }
-                    else:
-                        _r = {}
+            if len(msgs) == 1 and _x.reply_to and "r" in d:
+                reply = await _x.get_reply_message()
+                if isinstance(reply.sender, types.Channel):
+                    _r = {
+                        "chatId": e.chat_id,
+                        "first_name": reply.chat.title,
+                        "last_name": "",
+                        "username": reply.chat.username,
+                        "text": reply.text,
+                        "name": reply.chat.title,
+                    }
+                elif reply.sender:
+                    name = reply.sender.first_name
+                    name = f"{name} {reply.sender.last_name}" if reply.sender.last_name else name
+                    if reply.fwd_from and reply.fwd_from.from_name:
+                        _name = reply.fwd_from.from_name
+                    _r = {
+                        "chatId": e.chat_id,
+                        "first_name": reply.sender.first_name,
+                        "last_name": "reply.sender.last_name",
+                        "username": reply.sender.username,
+                        "text": reply.text,
+                        "name": name,
+                    }
                 else:
                     _r = {}
             else:
@@ -152,7 +145,7 @@ async def _quotly_api_(e):
                         "replyMessage": _r,
                     }
                 )
-            elif media:
+            else:
                 messages.append(
                     {
                         "chatId": e.chat_id,
@@ -182,7 +175,7 @@ async def _quotly_api_(e):
             f.name = "sticker.png" if photo else "sticker.webp"
             qs = await e.respond(file=f, buttons=None, force_document=photo)
     except Exception as ep:
-        await e.reply("error: " + str(ep))
+        await e.reply(f"error: {str(ep)}")
 
 
 def get_entites(x):
